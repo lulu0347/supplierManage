@@ -65,11 +65,47 @@
 		</div>
 	</div>
 
+	<div id="editSup" v-if="showEditBox">
+		<h2>編輯供應商</h2>
+		<div>
+			<label for="editSupplierId">供應商編號Id : </label>
+			<input type="text" id="editSupplierId" v-model="editSupplier.supplierId" readonly>
+		</div>
+		<div>
+			<label for="editAccount">User帳號 : </label>
+			<input type="text" id="editAccount" v-model="editSupplier.account">
+		</div>
+		<div>
+			<label for="editName">姓名 : </label>
+			<input type="text" id="editName" v-model="editSupplier.name">
+		</div>
+		<div>
+			<label for="editPhone">手機 : </label>
+			<input type="text" id="editPhone" v-model="editSupplier.phone">
+		</div>
+		<div>
+			<label for="editAddress">地址 : </label>
+			<input type="text" id="editAddress" v-model="editSupplier.address">
+		</div>
+		<div>
+			<label for="editEmail">信箱 : </label>
+			<input type="text" id="editEmail" v-model="editSupplier.email">
+		</div>
+		<div>
+			<label for="editLastModifyStaff">修改人員 : </label>
+			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff">
+		</div>
+		<br>
+		<button>確認修改</button>
+		<button @click="cancelEditUser">取消修改</button>
+	</div>
+
 	<script>
 		//-- VueX 全局事件總線 用於新增供應商後直接渲染回app標籤中
 		var eventBus = new Vue();
 
 		//-- 呼叫/suppliers取得DB內所有供應商
+		//-- 呼叫/supplier/${supplierId}刪除該供應商
 		var app = new Vue({
 			el: '#app',
 			data: {
@@ -108,6 +144,10 @@
 						.catch(error => {
 							console.error('Delete error:', error);
 						});
+				},
+				editUser: function (supplier) {
+					editSup.editSupplier = supplier;
+					editSup.showEditBox = true;
 				}
 			}
 		});
@@ -154,6 +194,19 @@
 				},
 				cancelAddUser: function () {
 					this.showInputBox = false;
+				}
+			}
+		});
+
+		var editSup = new Vue({
+			el: '#editSup',
+			data: {
+				showEditBox: true,
+				editSupplier: {}
+			},
+			methods: {
+				cancelEditUser: function () {
+					this.showEditBox = false;
 				}
 			}
 		});
