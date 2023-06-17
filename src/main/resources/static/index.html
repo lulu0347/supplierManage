@@ -12,17 +12,39 @@
 	<h1>供應商帳號管理系統</h1>
 
 	<div id="searchSup">
-		<p>User帳號查詢 : </p>
+		<p>User帳號查詢:</p>
 		<input type="text" v-model="searchAccount" placeholder="輸入User帳號">
 		<button @click="searchUser">依User帳號查詢</button>
-		<p>{{ searchResult }}</p>
+		<table v-if="searchResult" class="bordered-table">
+			<thead>
+				<tr>
+					<th v-for="(value, key) in searchResult" :key="key">{{ key }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td v-for="(value, key) in searchResult" :key="key">{{ value }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
 	<div id="searchSupByName">
 		<p>User姓名查詢 : </p>
 		<input type="text" v-model="searchName" placeholder="輸入User姓名">
 		<button @click="searchUserByName">依User姓名查詢</button>
-		<p>{{ searchResultByName }}</p>
+		<table v-if="searchResultByName" class="bordered-table">
+			<thead>
+				<tr>
+					<th v-for="(value, key) in searchResultByName" :key="key">{{ key }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td v-for="(value, key) in searchResultByName" :key="key">{{ value }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
 	<div id="searchSupByDateTimeRange">
@@ -30,10 +52,21 @@
 		<input type="datetime-local" v-model="startDateTime" step="1">
 		<input type="datetime-local" v-model="endDateTime" step="1">
 		<button @click="searchUserByDateTimeRange">依照時間區間查詢</button>
-		<p>{{ searchResultByDateTimeRange }}</p>
+		<table v-if="searchResultByDateTimeRange" class="bordered-table">
+			<thead>
+				<tr>
+					<th v-for="(value, key) in searchResultByDateTimeRange[0]" :key="key">{{ key }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="item in searchResultByDateTimeRange" :key="item.id">
+					<td v-for="(value, key) in item" :key="key">{{ value }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
-	<br>
+	<hr>
 
 	<div id="app">
 		<div v-if="data.length > 0">
@@ -148,6 +181,8 @@
 				//POST請求新增供應商時可即時渲染回頁面
 				eventBus.$on('userAdded', newUser => {
 					this.data.push(newUser);
+					//第一筆資料新增會有無法全部印出的問題 
+					location.reload();
 				});
 
 				//DELETE請求刪除供應商時可即時渲染回頁面
@@ -225,6 +260,7 @@
 						.then(response => {
 							//POST請求成功後，以全局事件總線送出
 							eventBus.$emit('userAdded', response.data);
+							this.fetchData();
 						})
 						.catch(error => {
 							console.error(error);
@@ -254,6 +290,8 @@
 			methods: {
 				cancelEditUser: function () {
 					this.showEditBox = false;
+					//取消更新時重整頁面，讓頁面參數回復原狀
+					location.reload();
 				},
 				confirmEditUser: function () {
 					axios.put(`/supplier/${this.editSupplier.supplierId}`, this.editSupplier)
