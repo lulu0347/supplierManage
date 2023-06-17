@@ -10,6 +10,31 @@
 
 <body>
 	<h1>供應商帳號管理系統</h1>
+
+	<div id="searchSup">
+		<p>User帳號查詢 : </p>
+		<input type="text" v-model="searchAccount" placeholder="輸入User帳號">
+		<button @click="searchUser">依User帳號查詢</button>
+		<p>{{ searchResult }}</p>
+	</div>
+
+	<div id="searchSupByName">
+		<p>User姓名查詢 : </p>
+		<input type="text" v-model="searchName" placeholder="輸入User姓名">
+		<button @click="searchUserByName">依User姓名查詢</button>
+		<p>{{ searchResultByName }}</p>
+	</div>
+
+	<div id="searchSupByDateTimeRange">
+		<p>新增時間區間查詢 :</p>
+		<input type="datetime-local" v-model="startDateTime" step="1">
+		<input type="datetime-local" v-model="endDateTime" step="1">
+		<button @click="searchUserByDateTimeRange">依照時間區間查詢</button>
+		<p>{{ searchResultByDateTimeRange }}</p>
+	</div>
+
+	<br>
+
 	<div id="app">
 		<table class="bordered-table">
 			<tr>
@@ -40,7 +65,7 @@
 				<input type="text" id="account" v-model="account" placeholder="帳號">
 			</div>
 			<div>
-				<label for="name">姓名 : </label>
+				<label for="name">User姓名 : </label>
 				<input type="text" id="name" v-model="name" placeholder="姓名">
 			</div>
 			<div>
@@ -76,7 +101,7 @@
 			<input type="text" id="editAccount" v-model="editSupplier.account">
 		</div>
 		<div>
-			<label for="editName">姓名 : </label>
+			<label for="editName">User姓名 : </label>
 			<input type="text" id="editName" v-model="editSupplier.name">
 		</div>
 		<div>
@@ -127,7 +152,7 @@
 
 				//PUT請求修改供應商時可即時渲染回頁面
 				eventBus.$on('userEdited', editedUser => {
-					
+
 					var updatedUser = this.data.find(user => user.supplierId === editedUser.supplierId);
 					if (updatedUser) {
 						updatedUser.last_modify_time = editedUser.last_modify_time;
@@ -137,6 +162,7 @@
 				this.fetchData();
 			},
 			methods: {
+
 				fetchData: function () {
 					axios.get('/suppliers')
 						.then(response => {
@@ -147,16 +173,19 @@
 							console.error(error);
 						});
 				},
+
 				deleteUser: function (supplierId) {
 					console.log('Deleting supplier with ID:', supplierId);
 					axios.delete(`/supplier/${supplierId}`)
 						.then(response => {
-							eventBus.$emit('userDeleted', supplierId); //--刪除後直接渲染回頁面
+							//DELETE請求成功後，以全局事件總線送出
+							eventBus.$emit('userDeleted', supplierId);
 						})
 						.catch(error => {
 							console.error('Delete error:', error);
 						});
 				},
+
 				editUser: function (supplier) {
 					editSup.editSupplier = supplier;
 					editSup.showEditBox = true;
@@ -189,7 +218,8 @@
 
 					axios.post('/supplier', newUser)
 						.then(response => {
-							eventBus.$emit('userAdded', response.data); //--新增後直接渲染回頁面
+							//POST請求成功後，以全局事件總線送出
+							eventBus.$emit('userAdded', response.data);
 						})
 						.catch(error => {
 							console.error(error);
@@ -223,7 +253,7 @@
 				confirmEditUser: function () {
 					axios.put(`/supplier/${this.editSupplier.supplierId}`, this.editSupplier)
 						.then(response => {
-							
+
 							//PUT請求成功後，重新取得修改時間並以全局事件總線送出
 							axios.get(`/supplier/supplierId/${this.editSupplier.supplierId}`)
 								.then(response => {
@@ -240,6 +270,84 @@
 				}
 			}
 		});
+
+		//以User帳號查詢
+		var searchSup = new Vue({
+			el: '#searchSup',
+			data: {
+				searchAccount: '',
+				searchResult: ''
+			},
+			methods: {
+				searchUser: function () {
+					axios.get(`/supplier/account/${this.searchAccount}`)
+						.then(response => {
+							this.searchResult = response.data;
+						})
+						.catch(error => {
+							console.error(error);
+						});
+				}
+			}
+		});
+
+		//以User姓名查詢
+		var searchSupByName = new Vue({
+			el: '#searchSupByName',
+			data: {
+				searchName: '',
+				searchResultByName: ''
+			},
+			methods: {
+				searchUserByName: function () {
+					axios.get(`/supplier/name/${this.searchName}`)
+						.then(response => {
+							this.searchResultByName = response.data;
+						})
+						.catch(error => {
+							console.error(error);
+						});
+				}
+			}
+		});
+
+		//以時間區間查詢
+		var searchSupByDateTimeRange = new Vue({
+			el: '#searchSupByDateTimeRange',
+			data: {
+				startDateTime: null,
+				endDateTime: null,
+				searchResultByDateTimeRange: ''
+			},
+			methods: {
+				searchUserByDateTimeRange: function () {
+					if (this.startDateTime && this.endDateTime) {
+						var formattedStartDateTime = formatDate(this.startDateTime);
+						var formattedEndDateTime = formatDate(this.endDateTime);
+						axios.get(`/supplier/timeRange/${formattedStartDateTime}/${formattedEndDateTime}`)
+							.then(response => {
+								this.searchResultByDateTimeRange = response.data;
+							})
+							.catch(error => {
+								console.error(error);
+							});
+					} else {
+						this.searchResultByDateTimeRange = '請選擇起始日期和結束日期';
+					}
+				}
+			}
+		});
+
+		function formatDate(dateTime) {
+			var year = dateTime.substring(0, 4);
+			var month = dateTime.substring(5, 7);
+			var day = dateTime.substring(8, 10);
+			var hours = dateTime.substring(11, 13);
+			var minutes = dateTime.substring(14, 16);
+			var seconds = dateTime.substring(17, 19);
+			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+		}
+
 	</script>
 
 	<style>
