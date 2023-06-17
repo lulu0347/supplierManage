@@ -6,7 +6,6 @@
 	<meta charset="UTF-8">
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-
 </head>
 
 <body>
@@ -35,6 +34,7 @@
 
 		<div v-if="showInputBox">
 			<br>
+			<h2>新增供應商</h2>
 			<div>
 				<label for="account">User帳號 : </label>
 				<input type="text" id="account" v-model="account" placeholder="帳號">
@@ -96,7 +96,7 @@
 			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff">
 		</div>
 		<br>
-		<button>確認修改</button>
+		<button @click="confirmEditUser">確認修改</button>
 		<button @click="cancelEditUser">取消修改</button>
 	</div>
 
@@ -111,15 +111,27 @@
 			data: {
 				data: [],
 				keys: [],
-				otherFunc: '其他功能'
+				otherFunc: '其他功能',
+				editSupplier: {}
 			},
 			created: function () {
+				//POST請求新增供應商時可即時渲染回頁面
 				eventBus.$on('userAdded', newUser => {
 					this.data.push(newUser);
 				});
 
+				//DELETE請求刪除供應商時可即時渲染回頁面
 				eventBus.$on('userDeleted', deletedUserId => {
 					this.data = this.data.filter(supplier => supplier.supplierId !== deletedUserId);
+				});
+
+				//PUT請求修改供應商時可即時渲染回頁面
+				eventBus.$on('userEdited', editedUser => {
+					
+					var updatedUser = this.data.find(user => user.supplierId === editedUser.supplierId);
+					if (updatedUser) {
+						updatedUser.last_modify_time = editedUser.last_modify_time;
+					}
 				});
 
 				this.fetchData();
@@ -201,12 +213,30 @@
 		var editSup = new Vue({
 			el: '#editSup',
 			data: {
-				showEditBox: true,
+				showEditBox: false,
 				editSupplier: {}
 			},
 			methods: {
 				cancelEditUser: function () {
 					this.showEditBox = false;
+				},
+				confirmEditUser: function () {
+					axios.put(`/supplier/${this.editSupplier.supplierId}`, this.editSupplier)
+						.then(response => {
+							
+							//PUT請求成功後，重新取得修改時間並以全局事件總線送出
+							axios.get(`/supplier/supplierId/${this.editSupplier.supplierId}`)
+								.then(response => {
+									eventBus.$emit('userEdited', response.data);
+									this.showEditBox = false;
+								})
+								.catch(error => {
+									console.error('取得供應商資料錯誤:', error);
+								});
+						})
+						.catch(error => {
+							console.error('編輯錯誤:', error);
+						});
 				}
 			}
 		});
