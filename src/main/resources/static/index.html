@@ -15,9 +15,14 @@
 		<table class="bordered-table">
 			<tr>
 				<th v-for="key in keys" :key="key">{{ key }}</th>
+				<th id="otherFunc">{{ otherFunc }}</th>
 			</tr>
 			<tr v-for="supplier in data" :key="supplier.supplierId">
 				<td v-for="key in keys" :key="key">{{ supplier[key] || '' }}</td>
+				<td>
+					<button @click="editUser(supplier)">修改</button>
+					<button @click="deleteUser(supplier.supplierId)">刪除</button>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -27,7 +32,7 @@
 	<div id="postSup">
 
 		<button @click="showInputBox = true">點擊新增供應商</button>
-		
+
 		<div v-if="showInputBox">
 			<br>
 			<div>
@@ -69,11 +74,16 @@
 			el: '#app',
 			data: {
 				data: [],
-				keys: []
+				keys: [],
+				otherFunc: '其他功能'
 			},
 			created: function () {
 				eventBus.$on('userAdded', newUser => {
 					this.data.push(newUser);
+				});
+
+				eventBus.$on('userDeleted', deletedUserId => {
+					this.data = this.data.filter(supplier => supplier.supplierId !== deletedUserId);
 				});
 
 				this.fetchData();
@@ -87,6 +97,16 @@
 						})
 						.catch(error => {
 							console.error(error);
+						});
+				},
+				deleteUser: function (supplierId) {
+					console.log('Deleting supplier with ID:', supplierId);
+					axios.delete(`/supplier/${supplierId}`)
+						.then(response => {
+							eventBus.$emit('userDeleted', supplierId); //--刪除後直接渲染回頁面
+						})
+						.catch(error => {
+							console.error('Delete error:', error);
 						});
 				}
 			}
@@ -117,8 +137,7 @@
 
 					axios.post('/supplier', newUser)
 						.then(response => {
-							console.log(response.data);
-							eventBus.$emit('userAdded', response.data);
+							eventBus.$emit('userAdded', response.data); //--新增後直接渲染回頁面
 						})
 						.catch(error => {
 							console.error(error);
