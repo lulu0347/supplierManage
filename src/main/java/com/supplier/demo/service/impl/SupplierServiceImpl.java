@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.supplier.demo.dao.SupplierDao;
 import com.supplier.demo.dto.SupplierRequest;
 import com.supplier.demo.model.Supplier;
 import com.supplier.demo.service.SupplierService;
 
+@Service
 @Component
 public class SupplierServiceImpl implements SupplierService{
 
