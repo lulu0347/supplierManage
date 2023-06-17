@@ -2,26 +2,33 @@ package com.supplier.demo.dto;
 
 import java.sql.Timestamp;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class SupplierRequest {
 	
 	@NotNull
+	@NotEmpty
 	private String account;
 	
 	@NotNull
+	@NotEmpty
 	private String name;
 	
 	@NotNull
+	@NotEmpty
 	private String phone;
 	
 	@NotNull
+	@NotEmpty
 	private String address;
 	
 	@NotNull
+	@NotEmpty
 	private String email;
 	
 	@NotNull
+	@NotEmpty
 	private String last_create_staff;
 	
 	private Timestamp last_create_time;

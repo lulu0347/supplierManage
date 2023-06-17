@@ -36,19 +36,24 @@
 	<br>
 
 	<div id="app">
-		<table class="bordered-table">
-			<tr>
-				<th v-for="key in keys" :key="key">{{ key }}</th>
-				<th id="otherFunc">{{ otherFunc }}</th>
-			</tr>
-			<tr v-for="supplier in data" :key="supplier.supplierId">
-				<td v-for="key in keys" :key="key">{{ supplier[key] || '' }}</td>
-				<td>
-					<button @click="editUser(supplier)">修改</button>
-					<button @click="deleteUser(supplier.supplierId)">刪除</button>
-				</td>
-			</tr>
-		</table>
+		<div v-if="data.length > 0">
+			<table class="bordered-table">
+				<tr>
+					<th v-for="key in keys" :key="key">{{ key }}</th>
+					<th id="otherFunc">{{ otherFunc }}</th>
+				</tr>
+				<tr v-for="supplier in data" :key="supplier.supplierId">
+					<td v-for="key in keys" :key="key">{{ supplier[key] || '' }}</td>
+					<td>
+						<button @click="editUser(supplier)">修改</button>
+						<button @click="deleteUser(supplier.supplierId)">刪除</button>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div v-else>
+			<p>沒有可顯示的數據</p>
+		</div>
 	</div>
 
 	<br>
