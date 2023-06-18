@@ -29,6 +29,7 @@
 				</tr>
 			</tbody>
 		</table>
+		<p class="noData" v-if="searchResult && searchResult.length === 0">查無資料</p>
 	</div>
 
 	<div id="searchSupByName">
@@ -47,6 +48,7 @@
 				</tr>
 			</tbody>
 		</table>
+		<p class="noData" v-if="searchResultByName && searchResultByName.length === 0">查無資料</p>
 	</div>
 
 	<div id="searchSupByDateTimeRange">
@@ -67,6 +69,7 @@
 				</tr>
 			</tbody>
 		</table>
+		<p class="noData" v-if="searchResultByDateTimeRange  && searchResultByDateTimeRange .length === 0">查無資料</p>
 	</div>
 
 	<hr>
@@ -105,7 +108,8 @@
 			<p class="create-err-msg">{{createErrorMsg}}</p>
 			<div>
 				<label for="account" class="required">User帳號 : </label>
-				<input type="text" id="account" v-model="account" @blur="checkAccountAvailability" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+				<input type="text" id="account" v-model="account" @blur="checkAccountAvailability"
+					placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
 				<span v-if="accountInUse" class="account-in-use">已被使用過，請更換</span>
 				<span v-else></span>
 				<div id="acnoError" v-if="acnoError" class="validError">{{ acnoError }}</div>
@@ -113,7 +117,8 @@
 
 			<div>
 				<label for="name" class="required">User姓名 : </label>
-				<input type="text" id="name" v-model="name" @blur="checkNameAvailability" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+				<input type="text" id="name" v-model="name" @blur="checkNameAvailability"
+					placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
 				<span v-if="nameInUse" class="name-in-use">已被使用過，請更換</span>
 				<span v-else></span>
 				<div id="nameError" v-if="nameError" class="validError">{{ nameError }}</div>
@@ -126,7 +131,8 @@
 			</div>
 			<div>
 				<label for="address" class="required">地址 : </label>
-				<input type="text" id="address" v-model="address" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+				<input type="text" id="address" v-model="address" placeholder="僅能輸入中英數字，長度必須於0~100間"
+					style="width: 250px">
 				<div id="addressError" v-if="addressError" class="validError">{{ addressError }}</div>
 			</div>
 			<div>
@@ -135,7 +141,8 @@
 			</div>
 			<div>
 				<label for="last_create_staff" class="required">新增人員 : </label>
-				<input type="text" id="last_create_staff" v-model="last_create_staff" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+				<input type="text" id="last_create_staff" v-model="last_create_staff" placeholder="僅能輸入中英字，長度必須於0~100間"
+					style="width: 250px">
 				<div id="last_create_staffError" v-if="last_create_staffError" class="validError">{{
 					last_create_staffError }}</div>
 			</div>
@@ -154,22 +161,26 @@
 		</div>
 		<div>
 			<label for="editAccount">User帳號 : </label>
-			<input type="text" id="editAccount" v-model="editSupplier.account" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+			<input type="text" id="editAccount" v-model="editSupplier.account" placeholder="僅能輸入中英數字，長度必須於0~100間"
+				style="width: 250px">
 			<div id="editAccountError" v-if="editAccountError" class="validError">{{ editAccountError }}</div>
 		</div>
 		<div>
 			<label for="editName">User姓名 : </label>
-			<input type="text" id="editName" v-model="editSupplier.name" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+			<input type="text" id="editName" v-model="editSupplier.name" placeholder="僅能輸入中英字，長度必須於0~100間"
+				style="width: 250px">
 			<div id="editNameError" v-if="editNameError" class="validError">{{ editNameError }}</div>
 		</div>
 		<div>
 			<label for="editPhone">手機 : </label>
-			<input type="text" id="editPhone" v-model="editSupplier.phone" placeholder="僅能輸入數字，長度必須於0-10字" style="width: 250px">
+			<input type="text" id="editPhone" v-model="editSupplier.phone" placeholder="僅能輸入數字，長度必須於0-10字"
+				style="width: 250px">
 			<div id="editPhoneError" v-if="editPhoneError" class="validError">{{ editPhoneError }}</div>
 		</div>
 		<div>
 			<label for="editAddress">地址 : </label>
-			<input type="text" id="editAddress" v-model="editSupplier.address" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+			<input type="text" id="editAddress" v-model="editSupplier.address" placeholder="僅能輸入中英數字，長度必須於0~100間"
+				style="width: 250px">
 			<div id="editAddressError" v-if="editAddressError" class="validError">{{ editAddressError }}</div>
 		</div>
 		<div>
@@ -178,12 +189,13 @@
 		</div>
 		<div>
 			<label for="editLastModifyStaff">修改人員 : </label>
-			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff"
+				placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
 			<div id="editLastModifyStaffError" v-if="editLastModifyStaffError" class="validError">{{
 				editLastModifyStaffError }}</div>
 		</div>
 		<br>
-		<button @click="confirmEditUser"　:disabled="!isUpdateFormValid">確認修改</button>
+		<button @click="confirmEditUser" 　:disabled="!isUpdateFormValid">確認修改</button>
 		<button @click="cancelEditUser">取消修改</button>
 	</div>
 
@@ -517,7 +529,7 @@
 							this.errorMsg = '修改失敗，請確認是否有無與資料庫中重複的帳號或姓名。'
 						});
 				},
-				
+
 				//驗證input修改表格是否都符合正則表達式
 				updateFormValidity() {
 					this.isUpdateFormValid =
@@ -681,6 +693,10 @@
 
 		.validError {
 			font-size: smaller;
+			color: red;
+		}
+		
+		.noData{
 			color: red;
 		}
 	</style>
