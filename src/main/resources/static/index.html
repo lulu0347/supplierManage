@@ -99,27 +99,28 @@
 			<br>
 			<h2>新增供應商</h2>
 			<div>
-				<label for="account">User帳號 : </label>
+				<label for="account" class="required">User帳號 : </label>
 				<input type="text" id="account" v-model="account" placeholder="帳號">
 			</div>
 			<div>
-				<label for="name">User姓名 : </label>
+				<label for="name" class="required">User姓名 : </label>
 				<input type="text" id="name" v-model="name" placeholder="姓名">
 			</div>
 			<div>
-				<label for="phone">手機 : </label>
+				<label for="phone" class="required">手機 : </label>
 				<input type="text" id="phone" v-model="phone" placeholder="手機">
 			</div>
 			<div>
-				<label for="address">地址 : </label>
+				<label for="address" class="required">地址 : </label>
 				<input type="text" id="address" v-model="address" placeholder="地址">
 			</div>
 			<div>
-				<label for="email">信箱 : </label>
+				<label for="email" class="required">信箱 : </label>
 				<input type="text" id="email" v-model="email" placeholder="信箱">
+
 			</div>
 			<div>
-				<label for="last_create_staff">新增人員 : </label>
+				<label for="last_create_staff" class="required">新增人員 : </label>
 				<input type="text" id="last_create_staff" v-model="last_create_staff" placeholder="新增人員">
 			</div>
 			<br>
@@ -247,6 +248,12 @@
 			},
 			methods: {
 				addUser: function () {
+
+					if (!this.account || !this.name || !this.phone || !this.address || !this.email || !this.last_create_staff) {
+						alert('請填寫所有必填欄位');
+						return;
+					}
+
 					const newUser = {
 						account: this.account,
 						name: this.name,
@@ -264,6 +271,7 @@
 						})
 						.catch(error => {
 							console.error(error);
+							console.log("新增錯誤");
 						});
 
 					this.account = '';
@@ -276,6 +284,12 @@
 					this.showInputBox = false;
 				},
 				cancelAddUser: function () {
+					this.account = '';
+					this.name = '';
+					this.phone = '';
+					this.address = '';
+					this.email = '';
+					this.last_create_staff = '';
 					this.showInputBox = false;
 					//取消新增時重整頁面，讓頁面參數回復原狀
 					location.reload()
@@ -296,6 +310,12 @@
 					location.reload();
 				},
 				confirmEditUser: function () {
+					
+					if (!this.account || !this.name || !this.phone || !this.address || !this.email || !this.last_modify_staff) {
+						alert('請填寫所有必填欄位');
+						return;
+					}
+					
 					axios.put(`/supplier/${this.editSupplier.supplierId}`, this.editSupplier)
 						.then(response => {
 
@@ -404,6 +424,11 @@
 		.bordered-table td {
 			border: 1px solid black;
 			padding: 8px;
+		}
+
+		.required::before {
+			content: '*';
+			color: red;
 		}
 	</style>
 </body>
