@@ -45,6 +45,30 @@ public class SupplierController {
 		}
 	}
 	
+	@GetMapping("/supplier/account/target/{account}")
+	public ResponseEntity<Supplier> getSupplierByAccount_target(@PathVariable String account){
+		
+		Supplier supplier = supplierService.getSupplierByAccount_target(account);
+		
+		if(supplier != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(supplier);
+		}else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+	}
+	
+	@GetMapping("/supplier/name/target/{name}")
+	public ResponseEntity<Supplier> getSupplierByName_target(@PathVariable String name){
+		
+		Supplier supplier = supplierService.getSupplierByName_target(name);
+		
+		if(supplier != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(supplier);
+		}else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+	}
+	
 	@GetMapping("/supplier/account/{account}")
 	public ResponseEntity<List<Supplier>> getSupplierByAccount(@PathVariable String account){
 		

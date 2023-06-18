@@ -30,6 +30,12 @@ public class SupplierDaoImpl implements SupplierDao{
 	@Value("${supplier.getSupplierById}")
 	private String getSupplierById;
 	
+	@Value("${supplier.getSupplierByAccount_target}")
+	private String getSupplierByAccount_target;
+	
+	@Value("${supplier.getSupplierByName_target}")
+	private String getSupplierByName_target;
+	
 	@Value("${supplier.getSupplierByAccount}")
 	private String getSupplierByAccount;
 	
@@ -68,6 +74,36 @@ public class SupplierDaoImpl implements SupplierDao{
 		map.put("supplierId", supplierId);
 		
 		List<Supplier> list = namedParameterJdbcTemplate.query(getSupplierById, map, new SupplierRowMapper());
+		
+		if(list.size() >0) {
+			return list.get(0);
+		}else {
+			return null;
+		}
+	}
+
+	@Override
+	public Supplier getSupplierByAccount_target(String account) {
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("account", account);
+		
+		List<Supplier> list = namedParameterJdbcTemplate.query(getSupplierByAccount_target, map, new SupplierRowMapper());
+		
+		if(list.size() >0) {
+			return list.get(0);
+		}else {
+			return null;
+		}
+	}
+
+	@Override
+	public Supplier getSupplierByName_target(String name) {
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("name", name);
+		
+		List<Supplier> list = namedParameterJdbcTemplate.query(getSupplierByName_target, map, new SupplierRowMapper());
 		
 		if(list.size() >0) {
 			return list.get(0);

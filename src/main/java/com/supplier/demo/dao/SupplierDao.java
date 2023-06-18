@@ -11,6 +11,10 @@ public interface SupplierDao {
 	
 	Supplier getSupplierById(Integer supplierId);
 	
+	Supplier getSupplierByAccount_target(String account);
+	
+	Supplier getSupplierByName_target(String name);
+	
 	List<Supplier> getSupplierByAccount(String account);
 	
 	List<Supplier> getSupplierByName(String name);

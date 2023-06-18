@@ -29,6 +29,16 @@ public class SupplierServiceImpl implements SupplierService{
 	}
 	
 	@Override
+	public Supplier getSupplierByAccount_target(String account) {
+		return supplierDao.getSupplierByAccount_target(account);
+	}
+
+	@Override
+	public Supplier getSupplierByName_target(String name) {
+		return supplierDao.getSupplierByName_target(name);
+	}
+
+	@Override
 	public List<Supplier> getSupplierByAccount(String account) {
 		return supplierDao.getSupplierByAccount(account);
 	}

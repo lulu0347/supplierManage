@@ -342,13 +342,15 @@
 			methods: {
 				checkAccountAvailability: function () {
 					if (this.account) {
-						const accountUrl = '/supplier/account/' + this.account;
+						const accountUrl = '/supplier/account/target/' + this.account;
 						axios.get(accountUrl)
 							.then(response => {
 								this.accountInUse = !!response.data;
+								console.log(this.accountInUse);
 							})
 							.catch(error => {
 								console.error(error);
+								console.log(this.accountInUse);
 								this.accountInUse = false;
 							});
 					} else {
@@ -358,7 +360,7 @@
 
 				checkNameAvailability: function () {
 					if (this.name) {
-						const nameUrl = '/supplier/name/' + this.name;
+						const nameUrl = '/supplier/name/target/' + this.name;
 						axios.get(nameUrl)
 							.then(response => {
 								this.nameInUse = !!response.data;
@@ -536,8 +538,8 @@
 				searchResult: '',
 				keyTranslations: {
 					supplierId: '供應商編號',
-					account: '帳號',
-					name: '姓名',
+					account: 'User帳號',
+					name: 'User姓名',
 					phone: '手機',
 					address: '地址',
 					email: '信箱',
@@ -568,8 +570,8 @@
 				searchResultByName: '',
 				keyTranslations: {
 					supplierId: '供應商編號',
-					account: '帳號',
-					name: '姓名',
+					account: 'User帳號',
+					name: 'User姓名',
 					phone: '手機',
 					address: '地址',
 					email: '信箱',
@@ -601,8 +603,8 @@
 				searchResultByDateTimeRange: '',
 				keyTranslations: {
 					supplierId: '供應商編號',
-					account: '帳號',
-					name: '姓名',
+					account: 'User帳號',
+					name: 'User姓名',
 					phone: '手機',
 					address: '地址',
 					email: '信箱',
