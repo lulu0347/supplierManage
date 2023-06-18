@@ -18,7 +18,7 @@
 		<table v-if="searchResult" class="bordered-table">
 			<thead>
 				<tr>
-					<th v-for="(value, key) in searchResult" :key="key">{{ key }}</th>
+					<th v-for="(value, key) in searchResult" :key="key">{{ keyTranslations[key] }}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -36,7 +36,7 @@
 		<table v-if="searchResultByName" class="bordered-table">
 			<thead>
 				<tr>
-					<th v-for="(value, key) in searchResultByName" :key="key">{{ key }}</th>
+					<th v-for="(value, key) in searchResultByName" :key="key">{{ keyTranslations[key] }}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -55,7 +55,8 @@
 		<table v-if="searchResultByDateTimeRange" class="bordered-table">
 			<thead>
 				<tr>
-					<th v-for="(value, key) in searchResultByDateTimeRange[0]" :key="key">{{ key }}</th>
+					<th v-for="(value, key) in searchResultByDateTimeRange[0]" :key="key">{{ keyTranslations[key] }}
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -70,9 +71,10 @@
 
 	<div id="app">
 		<div v-if="data.length > 0">
+			<p><b>總覽 : </b></p>
 			<table class="bordered-table">
 				<tr>
-					<th v-for="key in keys" :key="key">{{ key }}</th>
+					<th v-for="key in keys" :key="key">{{ keyTranslations[key] }}</th>
 					<th id="otherFunc">{{ otherFunc }}</th>
 				</tr>
 				<tr v-for="supplier in data" :key="supplier.supplierId">
@@ -98,58 +100,75 @@
 		<div v-if="showInputBox">
 			<br>
 			<h2>新增供應商</h2>
+			<p class="create-err-msg">{{createErrorMsg}}</p>
 			<div>
 				<label for="account" class="required">User帳號 : </label>
-				<input type="text" id="account" v-model="account" placeholder="帳號">
+				<input type="text" id="account" v-model="account" @blur="checkAccountAvailability" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+				<span v-if="accountInUse" class="account-in-use">已被使用過，請更換</span>
+				<span v-else></span>
+				<div id="acnoError" v-if="acnoError" class="validError">{{ acnoError }}</div>
 			</div>
+
 			<div>
 				<label for="name" class="required">User姓名 : </label>
-				<input type="text" id="name" v-model="name" placeholder="姓名">
+				<input type="text" id="name" v-model="name" @blur="checkNameAvailability" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+				<span v-if="nameInUse" class="name-in-use">已被使用過，請更換</span>
+				<span v-else></span>
+				<div id="nameError" v-if="nameError" class="validError">{{ nameError }}</div>
 			</div>
+
 			<div>
 				<label for="phone" class="required">手機 : </label>
-				<input type="text" id="phone" v-model="phone" placeholder="手機">
+				<input type="text" id="phone" v-model="phone" placeholder="僅能輸入數字，長度必須於0-10字" style="width: 250px">
+				<div id="phoneError" v-if="phoneError" class="validError">{{ phoneError }}</div>
 			</div>
 			<div>
 				<label for="address" class="required">地址 : </label>
-				<input type="text" id="address" v-model="address" placeholder="地址">
+				<input type="text" id="address" v-model="address" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+				<div id="addressError" v-if="addressError" class="validError">{{ addressError }}</div>
 			</div>
 			<div>
 				<label for="email" class="required">信箱 : </label>
 				<input type="text" id="email" v-model="email" placeholder="信箱">
-
 			</div>
 			<div>
 				<label for="last_create_staff" class="required">新增人員 : </label>
-				<input type="text" id="last_create_staff" v-model="last_create_staff" placeholder="新增人員">
+				<input type="text" id="last_create_staff" v-model="last_create_staff" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+				<div id="last_create_staffError" v-if="last_create_staffError" class="validError">{{
+					last_create_staffError }}</div>
 			</div>
 			<br>
-			<button @click="addUser">確認新增</button>
+			<button @click="addUser" :disabled="accountInUse || nameInUse || !isFormValid">確認新增</button>
 			<button @click="cancelAddUser">取消新增</button>
 		</div>
 	</div>
 
 	<div id="editSup" v-if="showEditBox">
 		<h2>編輯供應商</h2>
+		<p class="edit-err-msg">{{errorMsg}}</p>
 		<div>
 			<label for="editSupplierId">供應商編號Id : </label>
 			<input type="text" id="editSupplierId" v-model="editSupplier.supplierId" readonly>
 		</div>
 		<div>
 			<label for="editAccount">User帳號 : </label>
-			<input type="text" id="editAccount" v-model="editSupplier.account">
+			<input type="text" id="editAccount" v-model="editSupplier.account" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+			<div id="editAccountError" v-if="editAccountError" class="validError">{{ editAccountError }}</div>
 		</div>
 		<div>
 			<label for="editName">User姓名 : </label>
-			<input type="text" id="editName" v-model="editSupplier.name">
+			<input type="text" id="editName" v-model="editSupplier.name" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+			<div id="editNameError" v-if="editNameError" class="validError">{{ editNameError }}</div>
 		</div>
 		<div>
 			<label for="editPhone">手機 : </label>
-			<input type="text" id="editPhone" v-model="editSupplier.phone">
+			<input type="text" id="editPhone" v-model="editSupplier.phone" placeholder="僅能輸入數字，長度必須於0-10字" style="width: 250px">
+			<div id="editPhoneError" v-if="editPhoneError" class="validError">{{ editPhoneError }}</div>
 		</div>
 		<div>
 			<label for="editAddress">地址 : </label>
-			<input type="text" id="editAddress" v-model="editSupplier.address">
+			<input type="text" id="editAddress" v-model="editSupplier.address" placeholder="僅能輸入中英數字，長度必須於0~100間" style="width: 250px">
+			<div id="editAddressError" v-if="editAddressError" class="validError">{{ editAddressError }}</div>
 		</div>
 		<div>
 			<label for="editEmail">信箱 : </label>
@@ -157,10 +176,12 @@
 		</div>
 		<div>
 			<label for="editLastModifyStaff">修改人員 : </label>
-			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff">
+			<input type="text" id="editLastModifyStaff" v-model="editSupplier.last_modify_staff" placeholder="僅能輸入中英字，長度必須於0~100間" style="width: 250px">
+			<div id="editLastModifyStaffError" v-if="editLastModifyStaffError" class="validError">{{
+				editLastModifyStaffError }}</div>
 		</div>
 		<br>
-		<button @click="confirmEditUser">確認修改</button>
+		<button @click="confirmEditUser"　:disabled="!isUpdateFormValid">確認修改</button>
 		<button @click="cancelEditUser">取消修改</button>
 	</div>
 
@@ -176,7 +197,19 @@
 				data: [],
 				keys: [],
 				otherFunc: '其他功能',
-				editSupplier: {}
+				editSupplier: {},
+				keyTranslations: {
+					supplierId: '供應商編號',
+					account: '帳號',
+					name: '姓名',
+					phone: '手機',
+					address: '地址',
+					email: '信箱',
+					last_create_staff: '新增人員',
+					last_create_time: '新增時間',
+					last_modify_staff: '修改人員',
+					last_modify_time: '修改時間'
+				}
 			},
 			created: function () {
 				//POST請求新增供應商時可即時渲染回頁面
@@ -244,16 +277,100 @@
 				phone: '',
 				address: '',
 				email: '',
-				last_create_staff: ''
+				last_create_staff: '',
+				accountInUse: false,
+				nameInUse: false,
+				createErrorMsg: '',
+				isFormValid: true
+			},
+			computed: {
+				acnoError() {
+					const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.account)) {
+						return '僅能輸入中英數字，長度必須於0~100間';
+					}
+					return '';
+				},
+				nameError() {
+					const regex = /^[a-zA-Z\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.name)) {
+						return '僅能輸入中英字，長度必須於0~100間';
+					}
+					return '';
+				},
+				phoneError() {
+					const regex = /^[0-9]{0,10}$/;
+					if (!regex.test(this.phone)) {
+						return '僅能輸入數字，長度必須於0-10字';
+					}
+					return '';
+				},
+				addressError() {
+					const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.address)) {
+						return '僅能輸入中英數字，長度必須於0~100間';
+					}
+					return '';
+				},
+				last_create_staffError() {
+					const regex = /^[a-zA-Z\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.last_create_staff)) {
+						return '僅能輸入中英字，長度必須於0~100間';
+					}
+					return '';
+				},
+			},
+			watch: {
+				acnoError(newValue) {
+					this.updateFormValidity();
+				},
+				nameError(newValue) {
+					this.updateFormValidity();
+				},
+				phoneError(newValue) {
+					this.updateFormValidity();
+				},
+				addressError(newValue) {
+					this.updateFormValidity();
+				},
+				last_create_staffError(newValue) {
+					this.updateFormValidity();
+				},
 			},
 			methods: {
-				addUser: function () {
-
-					if (!this.account || !this.name || !this.phone || !this.address || !this.email || !this.last_create_staff) {
-						alert('請填寫所有必填欄位');
-						return;
+				checkAccountAvailability: function () {
+					if (this.account) {
+						const accountUrl = '/supplier/account/' + this.account;
+						axios.get(accountUrl)
+							.then(response => {
+								this.accountInUse = !!response.data;
+							})
+							.catch(error => {
+								console.error(error);
+								this.accountInUse = false;
+							});
+					} else {
+						this.accountInUse = false;
 					}
+				},
 
+				checkNameAvailability: function () {
+					if (this.name) {
+						const nameUrl = '/supplier/name/' + this.name;
+						axios.get(nameUrl)
+							.then(response => {
+								this.nameInUse = !!response.data;
+							})
+							.catch(error => {
+								console.error(error);
+								this.nameInUse = false;
+							});
+					} else {
+						this.nameInUse = false;
+					}
+				},
+
+				addUser: function () {
 					const newUser = {
 						account: this.account,
 						name: this.name,
@@ -270,8 +387,9 @@
 							this.fetchData();
 						})
 						.catch(error => {
-							console.error(error);
-							console.log("新增錯誤");
+							console.error("新增錯誤 : " + error);
+							console.log();
+							this.createErrorMsg = '新增失敗，請確認是否有無與資料庫中重複的帳號或姓名，或回報相關單位處理。'
 						});
 
 					this.account = '';
@@ -293,6 +411,16 @@
 					this.showInputBox = false;
 					//取消新增時重整頁面，讓頁面參數回復原狀
 					location.reload()
+				},
+
+				//驗證input表格是否都符合正則表達式
+				updateFormValidity() {
+					this.isFormValid =
+						this.acnoError === '' &&
+						this.nameError === '' &&
+						this.phoneError === '' &&
+						this.addressError === '' &&
+						this.last_create_staffError === '';
 				}
 			}
 		});
@@ -301,21 +429,72 @@
 			el: '#editSup',
 			data: {
 				showEditBox: false,
-				editSupplier: {}
+				editSupplier: {},
+				errorMsg: '',
+				isUpdateFormValid: true
+			},
+			computed: {
+				editAccountError() {
+					const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.editSupplier.account)) {
+						return '僅能輸入中英數字，長度必須於0~100間';
+					}
+					return '';
+				},
+				editNameError() {
+					const regex = /^[a-zA-Z\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.editSupplier.name)) {
+						return '僅能輸入中英字，長度必須於0~100間';
+					}
+					return '';
+				},
+				editPhoneError() {
+					const regex = /^[0-9]{0,10}$/;
+					if (!regex.test(this.editSupplier.phone)) {
+						return '僅能輸入數字，長度必須於0-10字';
+					}
+					return '';
+				},
+				editAddressError() {
+					const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.editSupplier.address)) {
+						return '僅能輸入中英數字，長度必須於0~100間';
+					}
+					return '';
+				},
+				editLastModifyStaffError() {
+					const regex = /^[a-zA-Z\u4e00-\u9fa5]{0,100}$/;
+					if (!regex.test(this.editSupplier.last_modify_staff)) {
+						return '僅能輸入中英字，長度必須於0~100間';
+					}
+					return '';
+				},
+			},
+			watch: {
+				editAccountError(newValue) {
+					this.updateFormValidity();
+				},
+				editNameError(newValue) {
+					this.updateFormValidity();
+				},
+				editPhoneError(newValue) {
+					this.updateFormValidity();
+				},
+				editAddressError(newValue) {
+					this.updateFormValidity();
+				},
+				editLastModifyStaffError(newValue) {
+					this.updateFormValidity();
+				},
 			},
 			methods: {
+
 				cancelEditUser: function () {
 					this.showEditBox = false;
 					//取消更新時重整頁面，讓頁面參數回復原狀
 					location.reload();
 				},
 				confirmEditUser: function () {
-					
-					if (!this.account || !this.name || !this.phone || !this.address || !this.email || !this.last_modify_staff) {
-						alert('請填寫所有必填欄位');
-						return;
-					}
-					
 					axios.put(`/supplier/${this.editSupplier.supplierId}`, this.editSupplier)
 						.then(response => {
 
@@ -331,7 +510,18 @@
 						})
 						.catch(error => {
 							console.error('編輯錯誤:', error);
+							this.errorMsg = '修改失敗，請確認是否有無與資料庫中重複的帳號或姓名。'
 						});
+				},
+				
+				//驗證input修改表格是否都符合正則表達式
+				updateFormValidity() {
+					this.isUpdateFormValid =
+						this.editAccountError === '' &&
+						this.editNameError === '' &&
+						this.editPhoneError === '' &&
+						this.editAddressError === '' &&
+						this.editLastModifyStaffError === '';
 				}
 			}
 		});
@@ -341,7 +531,19 @@
 			el: '#searchSup',
 			data: {
 				searchAccount: '',
-				searchResult: ''
+				searchResult: '',
+				keyTranslations: {
+					supplierId: '供應商編號',
+					account: '帳號',
+					name: '姓名',
+					phone: '手機',
+					address: '地址',
+					email: '信箱',
+					last_create_staff: '新增人員',
+					last_create_time: '新增時間',
+					last_modify_staff: '修改人員',
+					last_modify_time: '修改時間'
+				}
 			},
 			methods: {
 				searchUser: function () {
@@ -361,7 +563,19 @@
 			el: '#searchSupByName',
 			data: {
 				searchName: '',
-				searchResultByName: ''
+				searchResultByName: '',
+				keyTranslations: {
+					supplierId: '供應商編號',
+					account: '帳號',
+					name: '姓名',
+					phone: '手機',
+					address: '地址',
+					email: '信箱',
+					last_create_staff: '新增人員',
+					last_create_time: '新增時間',
+					last_modify_staff: '修改人員',
+					last_modify_time: '修改時間'
+				}
 			},
 			methods: {
 				searchUserByName: function () {
@@ -382,7 +596,19 @@
 			data: {
 				startDateTime: null,
 				endDateTime: null,
-				searchResultByDateTimeRange: ''
+				searchResultByDateTimeRange: '',
+				keyTranslations: {
+					supplierId: '供應商編號',
+					account: '帳號',
+					name: '姓名',
+					phone: '手機',
+					address: '地址',
+					email: '信箱',
+					last_create_staff: '新增人員',
+					last_create_time: '新增時間',
+					last_modify_staff: '修改人員',
+					last_modify_time: '修改時間'
+				}
 			},
 			methods: {
 				searchUserByDateTimeRange: function () {
@@ -428,6 +654,29 @@
 
 		.required::before {
 			content: '*';
+			color: red;
+		}
+
+		.account-in-use {
+			font-size: smaller;
+			color: red;
+		}
+
+		.name-in-use {
+			font-size: smaller;
+			color: red;
+		}
+
+		.edit-err-msg {
+			color: red;
+		}
+
+		.create-err-msg {
+			color: red;
+		}
+
+		.validError {
+			font-size: smaller;
 			color: red;
 		}
 	</style>
