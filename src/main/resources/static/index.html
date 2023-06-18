@@ -18,12 +18,14 @@
 		<table v-if="searchResult" class="bordered-table">
 			<thead>
 				<tr>
-					<th v-for="(value, key) in searchResult" :key="key">{{ keyTranslations[key] }}</th>
+					<th v-for="(value, key) in searchResult[0]" :key="key">{{ keyTranslations[key] }}</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td v-for="(value, key) in searchResult" :key="key">{{ value }}</td>
+					<tr v-for="item in searchResult" :key="item.id">
+						<td v-for="(value, key) in item" :key="key">{{ value }}</td>
+					</tr>
 				</tr>
 			</tbody>
 		</table>
@@ -36,12 +38,12 @@
 		<table v-if="searchResultByName" class="bordered-table">
 			<thead>
 				<tr>
-					<th v-for="(value, key) in searchResultByName" :key="key">{{ keyTranslations[key] }}</th>
+					<th v-for="(value, key) in searchResultByName[0]" :key="key">{{ keyTranslations[key] }}</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td v-for="(value, key) in searchResultByName" :key="key">{{ value }}</td>
+				<tr v-for="item in searchResultByName" :key="item.id">
+					<td v-for="(value, key) in item" :key="key">{{ value }}</td>
 				</tr>
 			</tbody>
 		</table>

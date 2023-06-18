@@ -11,9 +11,9 @@ public interface SupplierService {
 	
 	Supplier getSupplierById(Integer supplierId);
 	
-	Supplier getSupplierByAccount(String account);
+	List<Supplier> getSupplierByAccount(String account);
 	
-	Supplier getSupplierByName(String name);
+	List<Supplier> getSupplierByName(String name);
 	
 	List<Supplier> getSupplierByTimeRange(String startTime, String endTime);
 	

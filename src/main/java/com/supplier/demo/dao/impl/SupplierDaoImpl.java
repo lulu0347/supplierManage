@@ -77,33 +77,27 @@ public class SupplierDaoImpl implements SupplierDao{
 	}
 
 	@Override
-	public Supplier getSupplierByAccount(String account) {
+	public List<Supplier> getSupplierByAccount(String account) {
 		
 		Map<String,Object> map = new HashMap<String,Object>();
+		account = "%" + account + "%";
 		map.put("account", account);
 		
 		List<Supplier> list = namedParameterJdbcTemplate.query(getSupplierByAccount, map, new SupplierRowMapper());
 		
-		if(list.size() >0) {
-			return list.get(0);
-		}else {
-			return null;
-		}
+		return list;
 	}
 
 	@Override
-	public Supplier getSupplierByName(String name) {
+	public List<Supplier> getSupplierByName(String name) {
 		
 		Map<String,Object> map = new HashMap<String,Object>();
+		name = "%" + name + "%";
 		map.put("name", name);
 		
 		List<Supplier> list = namedParameterJdbcTemplate.query(getSupplierByName, map, new SupplierRowMapper());
 		
-		if(list.size() >0) {
-			return list.get(0);
-		}else {
-			return null;
-		}
+		return list;
 	}
 	
 	@Override

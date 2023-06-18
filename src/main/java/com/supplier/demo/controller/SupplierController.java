@@ -46,24 +46,24 @@ public class SupplierController {
 	}
 	
 	@GetMapping("/supplier/account/{account}")
-	public ResponseEntity<Supplier> getSupplierByAccount(@PathVariable String account){
+	public ResponseEntity<List<Supplier>> getSupplierByAccount(@PathVariable String account){
 		
-		Supplier supplier = supplierService.getSupplierByAccount(account);
+		List<Supplier> supplierList = supplierService.getSupplierByAccount(account);
 		
-		if(supplier != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(supplier);
+		if(supplierList != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(supplierList);
 		}else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 	}
 	
 	@GetMapping("/supplier/name/{name}")
-	public ResponseEntity<Supplier> getSupplierByName(@PathVariable String name){
+	public ResponseEntity<List<Supplier>> getSupplierByName(@PathVariable String name){
 		
-		Supplier supplier = supplierService.getSupplierByName(name);
+		List<Supplier> supplierList = supplierService.getSupplierByName(name);
 		
-		if(supplier != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(supplier);
+		if(supplierList != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(supplierList);
 		}else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
